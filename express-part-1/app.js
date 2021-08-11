@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express(); // instancia del objeto
-const logger = require("./logger")
+// const logger = require("./logger")
+const morgan = require("morgan")
 const Joi = require("joi");
 const port = process.env.PORT || 3000;
 
@@ -9,13 +10,16 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use(express.static("public"))
 
-app.use(logger)
+// Using third-party middleware 
+app.use(morgan("tiny"))
+console.log("Morgan activited...")
 
-app.use(function (req, res, next) {
-  console.log("Autenticando...")
-  console.log(req.url)
-  next()
-})
+// app.use(logger)
+// app.use(function (req, res, next) {
+//   console.log("Autenticando...")
+//   console.log(req.url)
+//   next()
+// })
 
 const users = [
   { id: 1, user_name: "Elliot" },
