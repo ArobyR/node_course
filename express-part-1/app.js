@@ -1,23 +1,31 @@
+const debug = require("debug")("app:init")
+// const dbDebug = require("debug")("app:db")
 const express = require("express");
 const app = express(); // instancia del objeto
 // const logger = require("./logger")
-const morgan = require("morgan")
+const morgan = require("morgan");
 const Joi = require("joi");
-const config = require("config")
+const config = require("config");
 const port = process.env.PORT || 3000;
 
 // middlewares
 app.use(express.json());
-app.use(express.urlencoded({extended:true}))
-app.use(express.static("public"))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
 // conf enviroments
-console.log("App: " + config.get("name"))
-console.log("DB server: " + config.get("configDB.host"))
+console.log("App: " + config.get("name"));
+console.log("DB server: " + config.get("configDB.host"));
 
-// Using third-party middleware 
-app.use(morgan("tiny"))
-console.log("Morgan activited...")
+// Using third-party middleware
+if (app.get("env") === "development") {
+  app.use(morgan("tiny"));
+//  console.log("Morgan activited...");
+  debug("Morgan is activited...")
+}
+
+// Working with db
+// dbDebug("Connecting with the database.")
 
 // app.use(logger)
 // app.use(function (req, res, next) {
