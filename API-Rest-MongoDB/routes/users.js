@@ -1,18 +1,7 @@
 const express = require("express");
-const Joi = require("joi");
 const User = require("../models/users_model");
 const route = express.Router();
-
-const schema = Joi.object({
-  user_name: Joi.string().min(3).max(30).required(),
-
-  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
-
-  email: Joi.string().email({
-    minDomainSegments: 2,
-    tlds: { allow: ["com", "net"] },
-  }),
-});
+const validateUser = require("../validateUser");
 
 route.get("/", (req, res) => {
   const users = getUser();
@@ -26,15 +15,12 @@ route.get("/", (req, res) => {
 });
 
 route.post("/", (req, res) => {
-  let body = req.body;
+  let { user_name, email, password } = req.body;
 
-  const { error, value } = schema.validate({
-    user_name: body.user_name,
-    email: body.email,
-  });
+  const { error, value } = validateUser(user_name, email, password);
 
   if (!error) {
-    let result = createUser(body);
+    let result = createUser(value);
     result
       .then((value) => {
         res.json({ user: value });
@@ -48,10 +34,16 @@ route.post("/", (req, res) => {
 route.put("/:email", (req, res) => {
   let email = req.params.email;
   let body = req.body;
-  const response = updateUser(email, body);
-  response
-    .then((value) => res.json(value))
-    .catch((err) => res.status(400).json({ error: err || "Error" }));
+  const { error } = validateUser(body.user_name, body.password);
+
+  if (!error) {
+    const response = updateUser(email, body);
+    response
+      .then((value) => res.json(value))
+      .catch((err) => res.status(400).json({ error: err || "Error" }));
+  } else {
+    res.status(400).json(error);
+  }
 });
 
 route.delete("/:email", (req, res) => {
@@ -62,7 +54,7 @@ route.delete("/:email", (req, res) => {
     })
     .catch((err) => {
       res.status(400).json({
-        err
+        err,
       });
     });
 });
