@@ -14,7 +14,7 @@ async function getCourse() {
 }
 
 async function updateCourse(id, body) {
-  const course = await Course.updateOne(
+  let course = await Course.updateOne(
     { _id: id },
     {
       $set: {
@@ -27,8 +27,8 @@ async function updateCourse(id, body) {
 }
 
 async function deleteCourse(id) {
-  const data = await Course.updateOne({ _id: id }, { course_state: false });
-  return data;
+  let result = await Course.updateOne({ _id: id }, { course_state: false });
+  return result;
 }
 
 module.exports = {
