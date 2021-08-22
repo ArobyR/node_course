@@ -15,7 +15,7 @@ async function getUser() {
 }
 
 async function updateUser(email, body) {
-  const user = await User.updateOne(
+  let user = await User.updateOne(
     { email: email },
     {
       $set: {
@@ -28,7 +28,7 @@ async function updateUser(email, body) {
 }
 
 async function deactivateUser(email) {
-  const result = await User.updateOne(
+  let result = await User.updateOne(
     { email: email },
     {
       $set: {
