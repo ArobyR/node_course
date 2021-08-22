@@ -1,6 +1,11 @@
 const express = require("express");
-const Course = require("../models/courses_model");
 const route = express.Router();
+const {
+  createCourse,
+  getCourse,
+  updateCourse,
+  deleteCourse
+} = require("../services/CourseService")
 
 route.get("/", (req, res) => {
   let courses = getCourse();
@@ -32,36 +37,5 @@ route.delete("/:id", (req, res) => {
     .then((value) => res.json(value))
     .catch((err) => res.status(400).json(err));
 });
-
-async function createCourse(body) {
-  const result = new Course({
-    title: body.title,
-    description: body.description,
-  });
-  return await result.save();
-}
-
-async function getCourse() {
-  const course = await Course.find({ course_state: true });
-  return course;
-}
-
-async function updateCourse(id, body) {
-  let course = await Course.updateOne(
-    { _id: id },
-    {
-      $set: {
-        title: body.title,
-        description: body.description,
-      },
-    }
-  );
-  return course;
-}
-
-async function deleteCourse(id) {
-  let result = await Course.updateOne({ _id: id }, { course_state: false });
-  return result;
-}
 
 module.exports = route;

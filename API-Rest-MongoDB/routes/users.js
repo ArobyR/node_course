@@ -1,7 +1,12 @@
 const express = require("express");
-const User = require("../models/users_model");
 const route = express.Router();
-const validateUser = require("../validateUser");
+const validateUser = require("../helpers/validateUser");
+const {
+  createUser,
+  getUser,
+  updateUser,
+  deactivateUser
+} = require("../services/UserService")
 
 route.get("/", (req, res) => {
   const users = getUser();
@@ -16,7 +21,6 @@ route.get("/", (req, res) => {
 
 route.post("/", (req, res) => {
   let { user_name, email, password } = req.body;
-
   const { error, value } = validateUser(user_name, email, password);
 
   if (!error) {
@@ -58,44 +62,5 @@ route.delete("/:email", (req, res) => {
       });
     });
 });
-
-async function createUser(body) {
-  const result = new User({
-    email: body.email,
-    user_name: body.user_name,
-    password: body.password,
-  });
-  return await result.save();
-}
-
-async function getUser() {
-  const users = await User.find({ user_state: true });
-  return users;
-}
-
-async function updateUser(email, body) {
-  let user = await User.updateOne(
-    { email: email },
-    {
-      $set: {
-        user_name: body.user_name,
-        password: body.password,
-      },
-    }
-  );
-  return user;
-}
-
-async function deactivateUser(email) {
-  let result = await User.updateOne(
-    { email: email },
-    {
-      $set: {
-        user_state: false,
-      },
-    }
-  );
-  return result;
-}
 
 module.exports = route;
