@@ -1,23 +1,48 @@
 const express = require("express");
+const Joi = require("joi");
 const User = require("../models/users_model");
 const route = express.Router();
 
+const schema = Joi.object({
+  user_name: Joi.string().min(3).max(30).required(),
+
+  password: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,30}$")),
+
+  email: Joi.string().email({
+    minDomainSegments: 2,
+    tlds: { allow: ["com", "net"] },
+  }),
+});
+
 route.get("/", (req, res) => {
-    const users = getUser()
-    users.then(userList => res.json({
-        users: userList
-    }))
-    .catch(err => res.status(400).json({error: err}))
+  const users = getUser();
+  users
+    .then((userList) =>
+      res.json({
+        users: userList,
+      })
+    )
+    .catch((err) => res.status(400).json(err));
 });
 
 route.post("/", (req, res) => {
   let body = req.body;
-  let result = createUser(body);
-  result
-    .then((value) => {
-      res.json({ user: value });
-    })
-    .catch((err) => res.status(400).json({ error: err }));
+
+  const { error, value } = schema.validate({
+    user_name: body.user_name,
+    email: body.email,
+  });
+
+  if (!error) {
+    let result = createUser(body);
+    result
+      .then((value) => {
+        res.json({ user: value });
+      })
+      .catch((err) => res.status(400).json(err));
+  } else {
+    res.status(400).json(error);
+  }
 });
 
 route.put("/:email", (req, res) => {
@@ -30,16 +55,17 @@ route.put("/:email", (req, res) => {
 });
 
 route.delete("/:email", (req, res) => {
-    let result = deactivateUser(req.params.email)
-    result.then(value => {
-        res.json(value)
+  let result = deactivateUser(req.params.email);
+  result
+    .then((value) => {
+      res.json(value);
     })
-    .catch(err => {
-        res.status(400).json({
-            error: err
-        })
-    })
-})
+    .catch((err) => {
+      res.status(400).json({
+        err
+      });
+    });
+});
 
 async function createUser(body) {
   const result = new User({
@@ -51,8 +77,8 @@ async function createUser(body) {
 }
 
 async function getUser() {
-    const users = await User.find({user_state: true})
-    return users;
+  const users = await User.find({ user_state: true });
+  return users;
 }
 
 async function updateUser(email, body) {
