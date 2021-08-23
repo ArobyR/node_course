@@ -5,8 +5,8 @@ const {
   createUser,
   getUser,
   updateUser,
-  deactivateUser
-} = require("../services/UserService")
+  deactivateUser,
+} = require("../services/UserService");
 
 route.get("/", (req, res) => {
   const users = getUser();
@@ -20,24 +20,22 @@ route.get("/", (req, res) => {
 });
 
 route.post("/", (req, res) => {
-  let { user_name, email, password } = req.body;
-  const { error, value } = validateUser(user_name, email, password);
+  const { user_name, password, email } = req.body;
+  const { error, value } = validateUser(user_name, password, email);
 
   if (!error) {
-    let result = createUser(value);
+    const result = createUser(value);
     result
-      .then((value) => {
-        res.json({ user: value });
-      })
-      .catch((err) => res.status(400).json(err));
+      .then((value) => res.json(value))
+      .catch((err) => res.status(400).json({ error: err }));
   } else {
     res.status(400).json(error);
   }
 });
 
 route.put("/:email", (req, res) => {
-  let email = req.params.email;
-  let body = req.body;
+  const email = req.params.email;
+  const body = req.body;
   const { error } = validateUser(body.user_name, body.password);
 
   if (!error) {
@@ -51,7 +49,7 @@ route.put("/:email", (req, res) => {
 });
 
 route.delete("/:email", (req, res) => {
-  let result = deactivateUser(req.params.email);
+  const result = deactivateUser(req.params.email);
   result
     .then((value) => {
       res.json(value);
