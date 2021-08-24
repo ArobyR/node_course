@@ -21,6 +21,7 @@ route.get("/", (req, res) => {
 
 route.post("/", (req, res) => {
   const { user_name, password, email } = req.body;
+
   const { error, value } = validateUser(user_name, password, email);
 
   if (!error) {

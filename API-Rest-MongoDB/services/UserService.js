@@ -1,10 +1,11 @@
 const User = require("../models/users_model");
+const bcrypt = require("bcrypt")
 
 async function createUser(body) {
   const result = new User({
     user_name: body.user_name,
     email: body.email,
-    password: body.password,
+    password: bcrypt.hashSync(body.password, 10)
   });
   return await result.save();
 }
@@ -21,7 +22,7 @@ async function updateUser(email, body) {
     {
       $set: {
         user_name: body.user_name,
-        password: body.password,
+        password: bcrypt.hashSync(body.password, 10)
       },
     }
   );
