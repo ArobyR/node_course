@@ -3,6 +3,9 @@
     "configDB": {
         "HOST": "mongodb://localhost:27017/test_db"
     },
+    "configServer": {
+        "PORT": 3000
+    },
     "configToken": {
         "SEED": "secret",
         "expiration": "1h"

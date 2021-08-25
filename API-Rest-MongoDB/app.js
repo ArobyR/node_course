@@ -5,7 +5,6 @@ const courseRoute = require("./routes/courses");
 const auth = require("./routes/auth")
 const config = require("config")
 
-const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -23,6 +22,6 @@ mongoose
   .then(() => console.log("Connected to mongodb..."))
   .catch((err) => console.log("Can't connected to mongoDB...", err));
 
-app.listen(port, () => {
+app.listen(config.get("configServer.PORT"), () => {
   console.log("API RestFul OK");
 });
