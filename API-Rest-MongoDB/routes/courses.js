@@ -1,5 +1,6 @@
 const express = require("express");
 const route = express.Router();
+const checkToken = require("../middlewares/auth")
 const {
   createCourse,
   getCourse,
@@ -7,14 +8,14 @@ const {
   deleteCourse
 } = require("../services/CourseService")
 
-route.get("/", (req, res) => {
+route.get("/", checkToken, (req, res) => {
   let courses = getCourse();
   courses
     .then((courseList) => res.json({ courses: courseList }))
     .catch((err) => res.status(400).json(err));
 });
 
-route.post("/", (req, res) => {
+route.post("/", checkToken, (req, res) => {
   let body = req.body;
   const result = createCourse(body);
   result
@@ -22,7 +23,7 @@ route.post("/", (req, res) => {
     .catch((err) => res.status(400).json(err));
 });
 
-route.put("/:id", (req, res) => {
+route.put("/:id", checkToken, (req, res) => {
   let body = req.body;
   let { id } = req.params;
   const result = updateCourse(id, body);
@@ -31,7 +32,7 @@ route.put("/:id", (req, res) => {
     .catch((err) => res.status(400).json(err));
 });
 
-route.delete("/:id", (req, res) => {
+route.delete("/:id", checkToken, (req, res) => {
   const result = deleteCourse(req.params.id);
   result
     .then((value) => res.json(value))

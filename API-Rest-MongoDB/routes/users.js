@@ -1,6 +1,8 @@
 const express = require("express");
 const route = express.Router();
 const validateUser = require("../helpers/validateUser");
+const tokenValidation = require("../middlewares/auth")
+
 const {
   createUser,
   getUser,
@@ -8,7 +10,7 @@ const {
   deactivateUser,
 } = require("../services/UserService");
 
-route.get("/", (req, res) => {
+route.get("/", tokenValidation, (req, res) => {
   const users = getUser();
   users
     .then((userList) =>
@@ -34,7 +36,7 @@ route.post("/", (req, res) => {
   }
 });
 
-route.put("/:email", (req, res) => {
+route.put("/:email", tokenValidation, (req, res) => {
   const email = req.params.email;
   const body = req.body;
   const { error } = validateUser(body.user_name, body.password);
@@ -49,7 +51,7 @@ route.put("/:email", (req, res) => {
   }
 });
 
-route.delete("/:email", (req, res) => {
+route.delete("/:email", tokenValidation, (req, res) => {
   const result = deactivateUser(req.params.email);
   result
     .then((value) => {
