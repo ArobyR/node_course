@@ -16,8 +16,8 @@ route.get("/", checkToken, (req, res) => {
 });
 
 route.post("/", checkToken, (req, res) => {
-  let body = req.body;
-  const result = createCourse(body);
+  // let body = req.body;
+  const result = createCourse(req);
   result
     .then((value) => res.json(value))
     .catch((err) => res.status(400).json(err));

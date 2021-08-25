@@ -1,15 +1,16 @@
 const Course = require("../models/courses_model");
 
-async function createCourse(body) {
+async function createCourse(req) {
   const result = new Course({
-    title: body.title,
-    description: body.description,
+    title: req.body.title,
+    author: req.user._id,
+    description: req.body.description,
   });
   return await result.save();
 }
 
 async function getCourse() {
-  const course = await Course.find({ course_state: true });
+  const course = await Course.find({ course_state: true }).populate("author", "user_name -_id");
   return course;
 }
 
@@ -32,8 +33,8 @@ async function deleteCourse(id) {
 }
 
 module.exports = {
-    createCourse,
-    getCourse,
-    updateCourse,
-    deleteCourse
-}
+  createCourse,
+  getCourse,
+  updateCourse,
+  deleteCourse,
+};
