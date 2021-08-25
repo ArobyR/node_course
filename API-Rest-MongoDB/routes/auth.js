@@ -11,7 +11,7 @@ route.post("/", (req, res) => {
       if (data && bcrypt.compareSync(req.body.password, data.password)) {
         const jwtoken = jwt.sign(
           {
-            data: {
+            user: {
               _id: data._id,
               user_name: data.user_name,
               email: data.email,

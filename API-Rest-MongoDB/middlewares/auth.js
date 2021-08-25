@@ -7,7 +7,7 @@ const tokenValidation = (req, res, next) => {
     if (err) {
       return res.status(401).json(err)
     }
-    req.user_name = decoded.user_name
+    req.user = decoded.user
    next()
   })
 }
